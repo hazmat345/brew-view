@@ -2,7 +2,6 @@
 
 // Javascript
 // Utilities
-import 'babel-polyfill';
 import 'objectpath';
 import 'tv4';
 import 'jquery';
