@@ -1,6 +1,6 @@
 {
-  "name": "brew_view",
-  "version": "0.0.2",
+  "name": "@beer-garden/brew-view",
+  "version": "0.0.1",
   "description": "Front End to a Command and Control Framework",
   "main": "app.py",
   "dependencies": {
@@ -77,14 +77,15 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
-    "dev": "webpack --config webpack.dev.js",
-    "watch": "webpack --watch --config webpack.dev.js",
-    "serve": "webpack-dev-server --config webpack.dev.js",
-    "pretest": "rm -rf output/js/",
     "lint": "eslint src/",
+    "pretest": "rm -rf output/js/",
     "test": "jest",
-    "oldtest": "karma start karma-conf.js --single-run"
+    "test:watch": "jest --watch",
+    "build": "webpack --config webpack.prod.js",
+    "build:dev": "webpack --config webpack.dev.js",
+    "watch": "webpack --watch --config webpack.prod.js",
+    "watch:dev": "webpack --watch --config webpack.dev.js",
+    "serve": "webpack-dev-server --config webpack.dev.js"
   },
   "repository": {
     "type": "git",
