@@ -2,7 +2,7 @@
   "name": "@beer-garden/brew-view",
   "version": "0.0.1",
   "description": "Front End to a Command and Control Framework",
-  "main": "app.py",
+  "main": "server.js",
   "dependencies": {
     "@beer-garden/addons": "^0.4.0",
     "@uirouter/angularjs": "^1.0.3",
@@ -51,9 +51,11 @@
     "eslint-config-google": "^0.9.1",
     "eslint-loader": "^1.9.0",
     "eslint-watch": "^3.1.4",
+    "express": "^4.16.3",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.5",
     "html-loader": "^0.5.0",
+    "http-proxy": "^1.16.2",
     "jasmine": "^2.5.3",
     "jest": "^22.4.2",
     "karma": "^1.4.1",
@@ -88,7 +90,11 @@
     "build:dev": "webpack --config webpack.dev.js",
     "watch": "webpack --watch --config webpack.prod.js",
     "watch:dev": "webpack --watch --config webpack.dev.js",
-    "serve": "webpack-dev-server --config webpack.dev.js"
+    "serve": "webpack-dev-server --config webpack.dev.js",
+    "start": "node server.js"
+  },
+  "bin": {
+    "brew-view": "./server.js"
   },
   "repository": {
     "type": "git",
