@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-jest": "^22.4.1",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
@@ -52,6 +53,7 @@
     "file-loader": "^1.1.5",
     "html-loader": "^0.5.0",
     "jasmine": "^2.5.3",
+    "jest": "^22.4.2",
     "karma": "^1.4.1",
     "karma-chai-sinon": "^0.1.5",
     "karma-coverage": "^1.1.1",
@@ -80,7 +82,8 @@
     "serve": "webpack-dev-server --config webpack.dev.js",
     "pretest": "rm -rf output/js/",
     "lint": "eslint src/",
-    "test": "karma start karma-conf.js --single-run"
+    "test": "jest",
+    "oldtest": "karma start karma-conf.js --single-run"
   },
   "repository": {
     "type": "git",
@@ -95,6 +98,23 @@
     "and",
     "control"
   ],
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/test/setup.js",
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest",
+      "^(?!.*\\.(js|jsx|json)$)": "<rootDir>/test/fileTransform.js"
+    }
+  },
   "author": "",
   "license": "MIT"
 }
