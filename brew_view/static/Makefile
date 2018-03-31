@@ -48,7 +48,7 @@ test: ## run tests
 	yarn test
 
 coverage: ## check code coverage
-	echo "TODO: run coverage reports"
+	yarn test --coverage
 
 dist: clean ## builds distribution
 	yarn build
