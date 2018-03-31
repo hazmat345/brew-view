@@ -11,5 +11,5 @@ script:
   - tox
   - make -C brew_view/static/ lint coverage
 after_success:
-  - codecov
-  - yarn --cwd brew_view/static run codecov
+  - codecov -F backend
+  - yarn --cwd brew_view/static run codecov -F frontend
