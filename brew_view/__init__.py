@@ -4,6 +4,7 @@ import os
 import ssl
 from concurrent.futures import ThreadPoolExecutor
 
+import marshmallow
 from apispec import APISpec
 from apscheduler.executors.tornado import TornadoExecutor
 from apscheduler.schedulers.tornado import TornadoScheduler
@@ -137,33 +138,33 @@ def _setup_tornado_app():
     # These get documented in our OpenAPI (fka Swagger) documentation
     published_url_specs = [
         (r'{0}api/v1/commands/?'.format(prefix), CommandListAPI),
-        (r'{0}api/v1/requests/?'.format(prefix), RequestListAPI),
-        (r'{0}api/v1/systems/?'.format(prefix), SystemListAPI),
-        (r'{0}api/v1/queues/?'.format(prefix), QueueListAPI),
-        (r'{0}api/v1/users/?'.format(prefix), UsersAPI),
-        (r'{0}api/v1/roles/?'.format(prefix), RolesAPI),
+        # (r'{0}api/v1/requests/?'.format(prefix), RequestListAPI),
+        # (r'{0}api/v1/systems/?'.format(prefix), SystemListAPI),
+        # (r'{0}api/v1/queues/?'.format(prefix), QueueListAPI),
+        # (r'{0}api/v1/users/?'.format(prefix), UsersAPI),
+        # (r'{0}api/v1/roles/?'.format(prefix), RolesAPI),
         (r'{0}api/v1/tokens/?'.format(prefix), TokenListAPI),
-        (r'{0}api/v1/admin/?'.format(prefix), AdminAPI),
-        (r'{0}api/v1/jobs/?'.format(prefix), JobListAPI),
-        (r'{0}api/v1/commands/(\w+)/?'.format(prefix), CommandAPI),
-        (r'{0}api/v1/instances/(\w+)/?'.format(prefix), InstanceAPI),
-        (r'{0}api/v1/requests/(\w+)/?'.format(prefix), RequestAPI),
-        (r'{0}api/v1/systems/(\w+)/?'.format(prefix), SystemAPI),
-        (r'{0}api/v1/queues/([\w\.-]+)/?'.format(prefix), QueueAPI),
-        (r'{0}api/v1/users/(\w+)/?'.format(prefix), UserAPI),
-        (r'{0}api/v1/roles/(\w+)/?'.format(prefix), RoleAPI),
-        (r'{0}api/v1/tokens/(\w+)/?'.format(prefix), TokenAPI),
-        (r'{0}api/v1/jobs/(\w+)/?'.format(prefix), JobAPI),
-        (r'{0}api/v1/config/logging/?'.format(prefix), LoggingConfigAPI),
-
-
-        # Beta
-        (r'{0}api/vbeta/events/?'.format(prefix), EventPublisherAPI),
-
-        # Deprecated
-        (r'{0}api/v1/admin/system/?'.format(prefix), OldAdminAPI),
-        (r'{0}api/v1/admin/queues/?'.format(prefix), OldQueueListAPI),
-        (r'{0}api/v1/admin/queues/([\w\.-]+)/?'.format(prefix), OldQueueAPI)
+        # (r'{0}api/v1/admin/?'.format(prefix), AdminAPI),
+        # (r'{0}api/v1/jobs/?'.format(prefix), JobListAPI),
+        # (r'{0}api/v1/commands/(\w+)/?'.format(prefix), CommandAPI),
+        # (r'{0}api/v1/instances/(\w+)/?'.format(prefix), InstanceAPI),
+        # (r'{0}api/v1/requests/(\w+)/?'.format(prefix), RequestAPI),
+        # (r'{0}api/v1/systems/(\w+)/?'.format(prefix), SystemAPI),
+        # (r'{0}api/v1/queues/([\w\.-]+)/?'.format(prefix), QueueAPI),
+        # (r'{0}api/v1/users/(\w+)/?'.format(prefix), UserAPI),
+        # (r'{0}api/v1/roles/(\w+)/?'.format(prefix), RoleAPI),
+        # (r'{0}api/v1/tokens/(\w+)/?'.format(prefix), TokenAPI),
+        # (r'{0}api/v1/jobs/(\w+)/?'.format(prefix), JobAPI),
+        # (r'{0}api/v1/config/logging/?'.format(prefix), LoggingConfigAPI),
+        #
+        #
+        # # Beta
+        # (r'{0}api/vbeta/events/?'.format(prefix), EventPublisherAPI),
+        #
+        # # Deprecated
+        # (r'{0}api/v1/admin/system/?'.format(prefix), OldAdminAPI),
+        # (r'{0}api/v1/admin/queues/?'.format(prefix), OldQueueListAPI),
+        # (r'{0}api/v1/admin/queues/([\w\.-]+)/?'.format(prefix), OldQueueAPI)
     ]
 
     # And these do not
@@ -283,10 +284,26 @@ def _setup_event_publishers(ssl_context):
 
 
 def _load_swagger(url_specs, title=None):
-
     global api_spec
-    api_spec = APISpec(title=title, version='1.0',
-                       plugins=('apispec.ext.marshmallow', 'apispec.ext.tornado'))
+
+    api_spec = APISpec(title=title,
+                       version='1.0',
+                       openapi_version='3.0.0',
+                       plugins=('apispec.ext.marshmallow',
+                                'apispec.ext.tornado'),
+                       components={
+                           'securitySchemes': {
+                               'bearerAuth': {
+                                   'type': 'http',
+                                   'scheme': 'bearer',
+                                   'in': 'header',
+                                   'bearerFormat': 'JWT',
+                               }
+                           },
+                           'security': {
+                               'bearerAuth': []
+                           }
+                       })
 
     # Schemas from Marshmallow
     api_spec.definition('Parameter', schema=ParameterSchema)
@@ -300,28 +317,31 @@ def _load_swagger(url_specs, title=None):
     api_spec.definition('Role', schema=RoleSchema)
     api_spec.definition('Queue', schema=QueueSchema)
     api_spec.definition('RefreshToken', schema=RefreshTokenSchema)
-    api_spec.definition('_patch', schema=PatchSchema)
-    api_spec.definition('Patch', properties={"operations": {
-        "type": "array", "items": {"$ref": "#/definitions/_patch"}}
-    })
+    api_spec.definition('Patch', schema=PatchSchema)
+    # api_spec.definition('_patch', schema=PatchSchema)
+    # api_spec.definition('Patch', properties={"operations": {
+    #     "type": "array", "items": {"$ref": "#/components/schemas/_patch"}}
+    # })
     api_spec.definition('DateTrigger', schema=DateTriggerSchema)
     api_spec.definition('CronTrigger', schema=CronTriggerSchema)
     api_spec.definition('IntervalTrigger', schema=IntervalTriggerSchema)
     api_spec.definition('Job', schema=JobSchema)
-    trigger_properties = {
-        'allOf': [
-            {'$ref': '#/definitions/CronTrigger'},
-            {'$ref': '#/definitions/DateTrigger'},
-            {'$ref': '#/definitions/IntervalTrigger'},
-        ],
-    }
-    api_spec._definitions['Job']['properties']['trigger'] = trigger_properties
+    # trigger_properties = {
+    #     'allOf': [
+    #         {'$ref': '#/components/schemas/CronTrigger'},
+    #         {'$ref': '#/components/schemas/DateTrigger'},
+    #         {'$ref': '#/components/schemas/IntervalTrigger'},
+    #     ],
+    # }
+    # api_spec._definitions['Job']['properties']['trigger'] = trigger_properties
 
-    error = {'message': {'type': 'string'}}
-    api_spec.definition('400Error', properties=error, description='Parameter validation error')
-    api_spec.definition('404Error', properties=error, description='Resource does not exist')
-    api_spec.definition('409Error', properties=error, description='Resource already exists')
-    api_spec.definition('50xError', properties=error, description='Server exception')
+    class ErrorSchema(marshmallow.Schema):
+        error = marshmallow.fields.Str()
+
+    api_spec.definition('400Error', schema=ErrorSchema, description='Parameter validation error')
+    api_spec.definition('404Error', schema=ErrorSchema, description='Resource does not exist')
+    api_spec.definition('409Error', schema=ErrorSchema, description='Resource already exists')
+    api_spec.definition('50xError', schema=ErrorSchema, description='Server exception')
 
     # Finally, add documentation for all our published paths
     for url_spec in url_specs:

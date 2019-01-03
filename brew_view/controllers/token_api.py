@@ -37,12 +37,14 @@ class TokenAPI(BaseHandler):
         responses:
           200:
             description: System with the given ID
-            schema:
-              $ref: '#/definitions/System'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/System'
           404:
-            $ref: '#/definitions/404Error'
+            $ref: '#/components/schemas/404Error'
           50x:
-            $ref: '#/definitions/50xError'
+            $ref: '#/components/schemas/50xError'
         tags:
           - Tokens
         """
@@ -74,9 +76,9 @@ class TokenAPI(BaseHandler):
           204:
             description: Token has been successfully deleted
           404:
-            $ref: '#/definitions/404Error'
+            $ref: '#/components/schemas/404Error'
           50x:
-            $ref: '#/definitions/50xError'
+            $ref: '#/components/schemas/50xError'
         tags:
           - Tokens
         """
@@ -101,12 +103,14 @@ class TokenListAPI(BaseHandler):
         responses:
           200:
             description: All Tokens
-            schema:
-              type: array
-              items:
-                $ref: '#/definitions/RefreshToken'
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RefreshToken'
           50x:
-            $ref: '#/definitions/50xError'
+            $ref: '#/components/schemas/50xError'
         tags:
           - Tokens
         """
@@ -122,12 +126,14 @@ class TokenListAPI(BaseHandler):
         responses:
           200:
             description: All Tokens
-            schema:
-              type: array
-              items:
-                $ref: '#/definitions/Command'
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Command'
           50x:
-            $ref: '#/definitions/50xError'
+            $ref: '#/components/schemas/50xError'
         tags:
           - Tokens
         """

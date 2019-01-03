@@ -21,12 +21,16 @@ class CommandListAPI(BaseHandler):
         responses:
           200:
             description: All Commands
-            schema:
-              type: array
-              items:
-                $ref: '#/definitions/Command'
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Command'
           50x:
-            $ref: '#/definitions/50xError'
+            $ref: '#/components/schemas/50xError'
+        security:
+          - bearerAuth
         tags:
           - Commands
         """
